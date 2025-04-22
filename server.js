@@ -10,9 +10,12 @@ const mime = require('mime');
 // Initialize Express
 const app = express();
 
-// Enhanced CORS configuration (preserved existing with improvements)
+// Enhanced CORS configuration (updated to allow frontend on Vercel)
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  origin: [
+    process.env.CLIENT_URL || 'http://localhost:3000', 
+    'https://frontend-mu-rosy-63.vercel.app'
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
