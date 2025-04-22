@@ -48,7 +48,7 @@ const upload = multer({
 });
 
 // Upload Route (unchanged)
-router.post('/upload', upload.single('file.pdf'), async (req, res) => {
+router.post('/upload', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
