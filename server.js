@@ -91,17 +91,6 @@ app.get('/api/files/download/:filename', (req, res) => {
   }
 });
 
-// 🔧 Optional: Simple test route to test download directly
-app.get('/test-download', (req, res) => {
-  const testFile = path.join(__dirname, 'uploads', '37ee1a38-9cff-4345-a3e9-27945749dd11.pdf'); // Replace with actual file name
-  res.download(testFile, 'test-download.pdf', (err) => {
-    if (err) {
-      console.error('Test download failed:', err);
-      res.status(500).send('Test download failed');
-    }
-  });
-});
-
 // Database Connection (preserved)
 const connectDB = require('./config/db');
 connectDB().catch(err => {
