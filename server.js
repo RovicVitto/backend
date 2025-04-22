@@ -38,59 +38,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   }
 }));
 
-// File download route (enhanced with additional checks)
-app.get('/api/files/download/:filename', (req, res) => {
-  try {
-    const { filename } = req.params;
-    const safeFilename = path.basename(filename);
-    const filePath = path.join(__dirname, 'uploads', safeFilename);
-
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'File not found',
-        details: process.env.NODE_ENV === 'development' ? `Requested: ${filename}` : undefined
-      });
-    }
-
-    // Get original filename from metadata if available
-    const metadataPath = path.join(__dirname, 'uploads', 'fileMetadata.json');
-    let downloadName = safeFilename;
-    
-    if (fs.existsSync(metadataPath)) {
-      const metadata = JSON.parse(fs.readFileSync(metadataPath));
-      const match = metadata.find(meta => meta.filename === safeFilename);
-      if (match) downloadName = match.originalname;
-    }
-
-    // Set security headers
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(downloadName)}"`);
-
-    // Stream the file with error handling
-    const fileStream = fs.createReadStream(filePath);
-    fileStream.pipe(res);
-    
-    fileStream.on('error', (err) => {
-      console.error('File stream error:', err);
-      if (!res.headersSent) {
-        res.status(500).json({ 
-          success: false, 
-          message: 'File download failed' 
-        });
-      }
-    });
-
-  } catch (error) {
-    console.error('Download handler error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error',
-      ...(process.env.NODE_ENV === 'development' && { error: error.message })
-    });
-  }
-});
-
 // Database Connection (preserved)
 const connectDB = require('./config/db');
 connectDB().catch(err => {
@@ -103,7 +50,7 @@ const fileRoutes = require('./routes/files');
 const quizRoutes = require('./routes/quiz');
 
 // API Routes (preserved)
-app.use('/api/files', fileRoutes);
+app.use('/api/files', fileRoutes);  // This needs to be properly aligned with route path.
 app.use('/api/quiz', quizRoutes);
 
 // Health Check (preserved with timestamp format)

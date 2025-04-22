@@ -198,20 +198,19 @@ router.get('/download/:filename', async (req, res) => {
 
     // Set headers for downloading the file
     res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(originalName)}"`);
-    res.setHeader('Content-Type', 'application/octet-stream');
-    
+    res.setHeader('Content-Type', mime.lookup(filePath) || 'application/octet-stream');
+
     // Stream the file
     const fileStream = fs.createReadStream(filePath);
     fileStream.pipe(res);
 
     fileStream.on('error', (err) => {
-      console.error('File stream error:', err);
+      console.error('Download error:', err);
       res.status(500).json({
         success: false,
-        message: 'Error streaming file'
+        message: 'Error downloading file'
       });
     });
-
   } catch (error) {
     console.error('Download error:', error);
     res.status(500).json({
